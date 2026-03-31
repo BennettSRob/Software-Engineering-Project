@@ -1,0 +1,441 @@
+Software Requirements Specification
+WeatherApp - Local Demonstration Version
+Version 1.0
+Date	  Version	Description   	Author
+March 20, 2026	1.0	Initial Draft	         Oscar Franklin and Bennett Roberts 
+________________________________________
+1. Introduction
+1.1 Purpose
+This document specifies the software requirements for WeatherApp, a web-based weather information application developed for CS445 at SEMO. WeatherApp provides users with current weather conditions, forecasts, and weather-related alerts through a localhost web interface. This SRS covers the complete functionality for the demonstration version, which will run in a web browser without requiring mobile app deployment.
+1.2 Document Conventions
+•	Must / Shall: Indicates mandatory requirements
+•	Should: Indicates recommended but not mandatory requirements
+•	May: Indicates optional requirements
+•	Priority Levels: High (critical for demonstration), Medium (important but not blocking), Low (nice-to-have)
+•	REQ-X: Functional requirement identifier
+•	NFR-X: Non-functional requirement identifier
+1.3 Intended Audience and Reading Suggestions
+Audience	Purpose	Recommended Sections
+Instructor/Evaluator	Assess completeness and quality	All sections
+Developers	Implement the system	Sections 3, 4, 5
+Testers	Verify requirements	Sections 4, 5
+Project Manager	Scope and planning	Sections 1, 2, 4
+1.4 Product Scope
+WeatherApp is a web-based weather application that retrieves and displays weather data from a public weather API. The application will run on localhost (development server) and provide a responsive interface for viewing current weather conditions, 5-day forecasts, and severe weather alerts for user-searched locations. This version is designed for academic demonstration purposes and will not be deployed to production app stores. The product will not include user accounts, saved locations, or push notifications.
+1.5 References
+•	OpenWeatherMap API Documentation: https://openweathermap.org/api
+•	W3C Web Content Accessibility Guidelines (WCAG) 2.1: https://www.w3.org/WAI/standards-guidelines/wcag/
+•	IEEE Std 830-1998: IEEE Recommended Practice for Software Requirements Specifications
+________________________________________
+2. Overall Description
+2.1 Product Perspective
+WeatherApp is a new, self-contained web application. It operates as a standalone system that communicates with external weather APIs to retrieve data. The application consists of a front-end user interface (HTML/CSS/JavaScript) and a lightweight back-end proxy (Node.js or Python Flask) to handle API requests securely.
+
+┌─────────────────────────────────────────────────────────────┐
+│                         User Browser                        │
+│                     (localhost:3000)                        │
+└─────────────────────────────┬───────────────────────────────┘
+                              │ HTTP/HTTPS
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    WeatherApp (Web Server)                  │
+│                   Node.js / Python Flask                    │
+└─────────────────────────────┬───────────────────────────────┘
+                              │ API Calls
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   OpenWeatherMap API                        │
+│                   (External Service)                        │
+└─────────────────────────────────────────────────────────────┘
+2.2 Product Functions
+•	Location Search: Users can search for weather by city name or ZIP code
+•	Current Weather Display: Shows temperature, humidity, wind speed, and conditions
+•	5-Day Forecast: Displays daily weather predictions with icons
+•	Weather Alerts: Shows severe weather warnings for the searched location
+•	Unit Toggle: Allows switching between Celsius and Fahrenheit
+•	Responsive Layout: Adapts to desktop, tablet, and mobile screen sizes
+2.3 User Classes and Characteristics
+User Class	Description	Technical Expertise	Frequency
+General User	End user checking weather	Low	High
+Demonstrator	Student presenting to instructor	Medium	Single use
+Evaluator	Instructor assessing functionality	High	Single use
+2.4 Operating Environment
+•	Server Platform: Local development machine running Windows, macOS, or Linux
+•	Web Browser: Modern browsers (Chrome 90+, Firefox 88+, Safari 14+, Edge 90+)
+•	Network: Internet connection required for API calls
+•	Development Environment: Node.js 16+ or Python 3.8+ with Flask
+2.5 Design and Implementation Constraints
+•	Must use a public weather API (OpenWeatherMap recommended)
+•	Must run entirely on localhost without external hosting
+•	Must be implemented using HTML, CSS, and JavaScript (no paid frameworks required)
+•	API key must be stored in environment variables, not hardcoded
+2.6 User Documentation
+•	README.md: Installation and setup instructions
+•	Inline Code Comments: Explanations of key functions
+•	User Guide: One-page PDF describing how to use the application
+2.7 Assumptions and Dependencies
+•	Assumptions:
+o	User has internet connectivity for API calls
+o	User has a modern web browser installed
+o	The OpenWeatherMap API remains available and free tier sufficient
+•	Dependencies:
+o	OpenWeatherMap API key must be obtained by developer
+o	Local development environment must support chosen technology stack
+________________________________________
+3. External Interface Requirements
+3.1 User Interfaces
+•	Search Bar: Text input with search button, auto-complete not required
+•	Current Weather Card: Displays location name, temperature, condition icon, humidity, wind speed
+•	Forecast Section: Horizontal scroll or grid of 5 daily forecast cards
+•	Alerts Section: Yellow/red banner displayed when alerts exist
+•	Unit Toggle: Button to switch °C/°F with immediate UI update
+•	Error Messages: User-friendly messages for invalid locations or API failures
+3.2 Hardware Interfaces
+No direct hardware interfaces. Application runs on standard consumer computing devices.
+3.3 Software Interfaces
+Interface	Purpose	Protocol
+OpenWeatherMap API	Retrieve current weather and forecast data	HTTPS REST
+Local Web Server	Serve application files	HTTP on localhost
+3.4 Communications Interfaces
+•	HTTP/HTTPS: All communication between client, server, and external API
+•	API Format: JSON payloads
+•	Rate Limiting: Respect free tier limits (60 calls/minute for OpenWeatherMap)
+________________________________________
+4. System Features
+4.1 Use Case Diagrams and Tabular Specifications
+________________________________________
+Use Case 1: Search Weather by City
+
+
+
+
+
+
+
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│                        WeatherApp                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│    ┌──────────────┐                                            │
+│    │   General    │                                            │
+│    │    User      │                                            │
+│    └──────┬───────┘                                            │
+│           │                                                     │
+│           │ 1. Enter city name                                  │
+│           │ 2. Click Search                                     │
+│           ▼                                                     │
+│    ┌──────────────────┐        ┌─────────────────┐             │
+│    │ Search Weather   │───────▶│ Display Weather │             │
+│    │ by City          │        │ Results         │             │
+│    └──────────────────┘        └─────────────────┘             │
+│           │                                                     │
+│           │ <<extends>>                                         │
+│           ▼                                                     │
+│    ┌──────────────────┐                                        │
+│    │ Handle Invalid   │                                        │
+│    │ Location         │                                        │
+│    └──────────────────┘                                        │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+Tabular Specification: Search Weather by City
+Element	Description
+Use Case Name	Search Weather by City
+Actors	General User
+Description	User enters a city name to retrieve current weather and forecast
+Preconditions	Application is running; internet connection available
+Postconditions	Weather data for the city is displayed; error shown if invalid
+Main Flow	1. User enters city name in search field
+2. User clicks Search button
+3. System validates input (non-empty)
+4. System sends request to weather API
+5. System displays current weather conditions
+6. System displays 5-day forecast
+7. System displays any weather alerts
+Alternative Flows	A1 - Invalid City:
+1. System returns "Location not found" message
+2. User is prompted to try again
+Exceptions	E1 - API Timeout: System displays "Service temporarily unavailable, please try again"
+E2 - No Internet: Browser displays connection error
+Priority	High
+Business Rules	City name must be at least 2 characters; API key must be valid
+________________________________________
+Use Case 2: Toggle Temperature Unit
+
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│                        WeatherApp                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│    ┌──────────────┐                                            │
+│    │   General    │                                            │
+│    │    User      │                                            │
+│    └──────┬───────┘                                            │
+│           │                                                     │
+│           │ 1. Click °F button (if currently °C)               │
+│           │    OR click °C button (if currently °F)            │
+│           ▼                                                     │
+│    ┌──────────────────┐        ┌─────────────────┐             │
+│    │ Toggle Unit      │───────▶│ Update Display  │             │
+│    │                  │        │ with Converted  │             │
+│    │                  │        │ Values          │             │
+│    └──────────────────┘        └─────────────────┘             │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+Tabular Specification: Toggle Temperature Unit
+Element	Description
+Use Case Name	Toggle Temperature Unit
+Actors	General User
+Description	User switches temperature display between Celsius and Fahrenheit
+Preconditions	Weather data is currently displayed on screen
+Postconditions	All temperature values convert to the selected unit
+Main Flow	1. User clicks the unit toggle button
+2. System identifies current unit state
+3. System converts all displayed temperatures using formula
+4. System updates UI with new values
+5. System highlights the active unit button
+Alternative Flows	None
+Exceptions	E1 - No Data Loaded: Unit toggle is disabled or does nothing
+Priority	Medium
+Business Rules	°C to °F: (°C × 9/5) + 32; °F to °C: (°F - 32) × 5/9; Toggle state persists during session
+________________________________________
+Use Case 3: View 5-Day Forecast
+
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│                        WeatherApp                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│    ┌──────────────┐                                            │
+│    │   General    │                                            │
+│    │    User      │                                            │
+│    └──────┬───────┘                                            │
+│           │                                                     │
+│           │ 1. Search for a city                                │
+│           │ 2. Scroll/View forecast section                     │
+│           ▼                                                     │
+│    ┌──────────────────┐        ┌─────────────────┐             │
+│    │ View 5-Day       │───────▶│ Display Daily   │             │
+│    │ Forecast         │        │ High/Low Temp,  │             │
+│    │                  │        │ Condition Icon  │             │
+│    └──────────────────┘        └─────────────────┘             │
+│                                                                 │
+│    ┌──────────────────┐                                        │
+│    │ <<includes>>     │                                        │
+│    │ API Data Fetch   │                                        │
+│    └──────────────────┘                                        │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+Tabular Specification: View 5-Day Forecast
+Element	Description
+Use Case Name	View 5-Day Forecast
+Actors	General User
+Description	User views weather predictions for the next 5 days
+Preconditions	User has successfully searched for a valid location
+Postconditions	Forecast cards display daily weather summary
+Main Flow	1. System retrieves forecast data from API
+2. System extracts daily summaries (high/low temps, conditions)
+3. System creates a card for each day
+4. System displays cards in chronological order
+5. User scrolls horizontally or vertically to view all days
+Alternative Flows	A1 - Incomplete Data: System displays "Forecast data unavailable" message
+Exceptions	E1 - API Limit Exceeded: System displays rate limit message
+Priority	High
+Business Rules	Forecast shows days 1-5 only; Each card shows day name, icon, high/low, description
+________________________________________
+Use Case 4: View Weather Alerts
+
+
+
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│                        WeatherApp                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│    ┌──────────────┐                                            │
+│    │   General    │                                            │
+│    │    User      │                                            │
+│    └──────┬───────┘                                            │
+│           │                                                     │
+│           │ 1. Search for a city                                │
+│           │ 2. Observe alerts section (if present)              │
+│           ▼                                                     │
+│    ┌──────────────────┐        ┌─────────────────┐             │
+│    │ Display Weather  │───────▶│ Show Alert      │             │
+│    │ Alerts           │        │ Banner with     │             │
+│    │                  │        │ Severity &      │             │
+│    │                  │        │ Description     │             │
+│    └──────────────────┘        └─────────────────┘             │
+│           │                                                     │
+│           │ <<extends>>                                         │
+│           ▼                                                     │
+│    ┌──────────────────┐        ┌─────────────────┐             │
+│    │ No Alerts        │───────▶│ Hide Alert      │             │
+│    │ Present          │        │ Section         │             │
+│    └──────────────────┘        └─────────────────┘             │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+Tabular Specification: View Weather Alerts
+Element	Description
+Use Case Name	View Weather Alerts
+Actors	General User
+Description	User sees severe weather warnings for the searched location
+Preconditions	User has searched for a valid location; API supports alerts
+Postconditions	Alert banner displayed if alerts exist; hidden if none
+Main Flow	1. System checks API response for alert data
+2. If alerts exist, system creates alert banner
+3. System displays alert severity (warning/watch/advisory)
+4. System displays alert description
+5. User acknowledges alert by viewing
+Alternative Flows	A1 - Multiple Alerts: System stacks alerts or shows count
+Exceptions	E1 - API Does Not Provide Alerts: Alert section remains hidden
+Priority	Medium
+Business Rules	Alerts displayed prominently at top; Red for warnings, orange for watches, yellow for advisories
+________________________________________
+4.2 Functional Requirements (Minimum 10)
+ID	Requirement Description	Priority
+REQ-1	The system shall allow users to search for weather by entering a city name.	High
+REQ-2	The system shall allow users to search for weather by entering a 5-digit ZIP code.	Medium
+REQ-3	The system shall display current temperature for the searched location.	High
+REQ-4	The system shall display current weather conditions (e.g., sunny, rainy, cloudy) with an icon.	High
+REQ-5	The system shall display current humidity percentage.	High
+REQ-6	The system shall display current wind speed.	Medium
+REQ-7	The system shall display a 5-day weather forecast with daily high/low temperatures.	High
+REQ-8	The system shall display weather alerts (warnings, watches) when applicable.	Medium
+REQ-9	The system shall provide a button to toggle temperature display between Celsius and Fahrenheit.	Medium
+REQ-10	The system shall validate user input and display an error message for invalid locations.	High
+REQ-11	The system shall handle API errors gracefully with user-friendly messages.	High
+REQ-12	The system shall display the last updated timestamp for weather data.	Low
+________________________________________
+4.3 Non-Functional Requirements (Minimum 5 with Taxonomy)
+Product Requirements
+Usability Requirements
+ID	Requirement Description	Category
+NFR-1	The user interface shall load and display weather data within 3 seconds of search submission.	Efficiency (Performance)
+NFR-2	The application shall be responsive and function properly on screen widths from 320px to 1920px.	Usability
+NFR-3	The application shall display clear error messages (e.g., "City not found") rather than technical errors.	Usability
+Dependability Requirements
+ID	Requirement Description	Category
+NFR-4	The system shall handle API timeout failures by displaying a message and allowing retry without crashing.	Dependability (Robustness)
+Security Requirements
+ID	Requirement Description	Category
+NFR-5	The API key shall be stored in environment variables, never exposed in client-side code.	Security
+Organizational Requirements
+Environmental Requirements
+ID	Requirement Description	Category
+NFR-6	The application shall run on Windows, macOS, and Linux development environments without modification.	Organizational (Environmental)
+Operational Requirements
+ID	Requirement Description	Category
+NFR-7	The application shall start with a single command (e.g., npm start or python app.py) from the command line.	Organizational (Operational)
+External Requirements
+Legislative/Security Requirements
+ID	Requirement Description	Category
+NFR-8	The application shall not store or log user search history or any personal data.	External (Legislative/Privacy)
+________________________________________
+5. Other Requirements
+5.1 Performance Requirements
+•	API calls must complete within 5 seconds or timeout with error message
+•	UI must remain interactive during API calls (non-blocking)
+•	Application bundle size must be under 2 MB
+5.2 Safety Requirements
+No safety-critical requirements for this demonstration application.
+5.3 Security Requirements
+•	API key must not be committed to version control
+•	No user authentication required
+5.4 Software Quality Attributes
+•	Maintainability: Code must be commented and follow consistent naming conventions
+•	Testability: Core functions (unit conversion, API calls) must be testable independently
+•	Portability: Application must run on any machine with Node.js or Python installed
+5.5 Business Rules
+•	Free API tier limited to 60 calls per minute
+•	Search requires minimum 2 characters for city, exactly 5 digits for ZIP
+•	Forecast displays days 1-5 only (not including current day)
+________________________________________
+6. Requirements Elicitation (2 Methods)
+Method 1: Interview with AI-Stakeholder (Zero-Shot Prompting)
+(Used Chat GPT)
+Prompt Used:
+"You are a stakeholder for a weather application that will be demonstrated in a university software development class. Please answer the following questions as a user who checks weather daily:
+1. What features would you expect to see when you open the app?
+2. What frustrates you about existing weather apps?
+3. What information is most important to you on the main screen?
+4. How do you prefer to search for locations?
+5. What would make you trust the weather data shown?"
+AI Response (Stakeholder Role):
+1.	"I expect to see the current temperature immediately without clicking anything. A 5-day forecast is essential for planning my week."
+2.	"I hate when apps show me ads or ask for my location when I just want to type in a city. Also, when the app doesn't tell me when the data was last updated, I don't know if it's current."
+3.	"Main screen needs: current temp, feels-like temp, condition (sunny/rainy), chance of rain, and wind speed. Humidity is helpful too."
+4.	"I prefer typing city names. ZIP code search is fine too, but city name is most natural. I don't want to use GPS."
+5.	"Seeing the source of the data (like 'Data from OpenWeatherMap') and a timestamp gives me confidence. If there's an alert, I want it highlighted clearly."
+Requirements Derived:
+•	REQ-3 (display current temperature)
+•	REQ-4 (display weather condition)
+•	REQ-12 (last updated timestamp)
+•	REQ-10 (validate user input - location-based, not GPS)
+•	Requirement to display data source (added to UI requirements)
+________________________________________
+Method 2: Interview with AI-Stakeholder (Chain-of-Thought Prompting)
+Prompt Used:
+"You are a software engineering instructor evaluating student projects. Think through this step-by-step:
+Step 1: Consider what makes a weather app suitable for academic demonstration.
+*Step 2: Think about common mistakes students make when building API-integrated apps.*
+Step 3: Consider how to evaluate if the app meets learning objectives.
+Step 4: Now, provide 5 key requirements this weather app must have to receive full credit.
+Show your reasoning for each step before listing the requirements."
+AI Response:
+Step 1 Reasoning: Academic demos need to show clear functionality without relying on complex infrastructure. The app must run reliably on the instructor's machine (localhost) with minimal setup.
+Step 2 Reasoning: Students often hardcode API keys, which then get exposed. They also fail to handle errors (like invalid city names) causing the app to crash or hang.
+Step 3 Reasoning: Evaluation focuses on requirement completeness, proper use of APIs, clean UI, and error handling. Code quality matters but for requirements, we need verifiable features.
+Step 4 - 5 Requirements for Full Credit:
+1.	Application must start and run without configuration beyond API key setup (single command).
+2.	All API calls must be non-blocking with loading indicators.
+3.	Invalid search input must trigger user-friendly error messages, not console errors.
+4.	API key must be externalized (environment variable) and not visible in browser dev tools network tab.
+5.	The 5-day forecast must be clearly distinct from current weather, with proper date labels.
+Requirements Derived:
+•	NFR-7 (single command startup)
+•	REQ-11 (graceful API error handling)
+•	NFR-5 (API key security)
+•	Requirement for loading indicators (added to UI section)
+•	REQ-7 with requirement for proper date labels (added to functional spec)
+________________________________________
+Appendix A: Glossary
+Term	Definition
+API	Application Programming Interface - allows software to communicate
+Localhost	The local computer (127.0.0.1) used for development testing
+SRS	Software Requirements Specification
+UI	User Interface
+REST	Representational State Transfer - API architectural style
+JSON	JavaScript Object Notation - data format
+Responsive Design	UI that adapts to different screen sizes
+Use Case	Description of system behavior in response to user action
+________________________________________
+Appendix B: Summary of Requirements
+Functional Requirements (12 total)
+ID	Description
+REQ-1	Search by city name
+REQ-2	Search by ZIP code
+REQ-3	Display current temperature
+REQ-4	Display weather condition with icon
+REQ-5	Display humidity
+REQ-6	Display wind speed
+REQ-7	Display 5-day forecast
+REQ-8	Display weather alerts
+REQ-9	Toggle Celsius/Fahrenheit
+REQ-10	Validate input and show errors
+REQ-11	Handle API errors gracefully
+REQ-12	Show last updated timestamp
+Non-Functional Requirements (8 total, categorized)
+ID	Description	Taxonomy Category
+NFR-1	Load within 3 seconds	Product → Efficiency → Performance
+NFR-2	Responsive layout	Product → Usability
+NFR-3	Clear error messages	Product → Usability
+NFR-4	Handle API failures	Product → Dependability
+NFR-5	API key security	Product → Security
+NFR-6	Multi-platform support	Organizational → Environmental
+NFR-7	Single command startup	Organizational → Operational
+NFR-8	No data storage	External → Legislative
