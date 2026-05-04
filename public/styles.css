@@ -1,0 +1,107 @@
+/* WeatherApp styles -- CS445 (kept basic) */
+
+body {
+  margin: 0;
+  background: #0f1724;
+  color: #e6ecf5;
+  font-family: Arial, sans-serif;
+}
+
+h1, h2, h3, h4 { margin: 8px 0; }
+.muted { color: #8b9bb5; }
+.center { text-align: center; }
+
+/* Top bar */
+.topbar {
+  padding: 10px;
+  border-bottom: 1px solid #8b9bb5;
+}
+.topbar h1 { display: inline-block; margin: 0; }
+.unit-toggle { float: right; }
+.unit-btn {
+  padding: 4px 10px;
+  background: #1f2c47;
+  color: #8b9bb5;
+  border: 1px solid #8b9bb5;
+  cursor: pointer;
+  font-family: inherit;
+}
+.unit-btn.active {
+  background: #4aa3ff;
+  color: #08111f;
+}
+.unit-btn:disabled { cursor: not-allowed; opacity: 0.5; }
+
+/* Layout */
+.container { padding: 10px; }
+
+/* Search */
+.search input {
+  padding: 4px;
+  background: #1f2c47;
+  color: #e6ecf5;
+  border: 1px solid #8b9bb5;
+  font-family: inherit;
+  font-size: 14px;
+}
+.search button {
+  padding: 4px 10px;
+  background: #4aa3ff;
+  color: #08111f;
+  border: 1px solid #4aa3ff;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.error { color: #ff6b6b; }
+.error.banner {
+  border: 1px solid #ff6b6b;
+  padding: 6px;
+  margin: 8px 0;
+}
+.loader { margin: 8px 0; }
+
+/* Alerts */
+.alerts { margin: 10px 0; }
+.alert {
+  border-left: 6px solid #f7d04a;   /* default = ADVISORY (yellow) */
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  background: #1f2c47;
+}
+.alert.warning  { border-left-color: #d9534f; }   /* red */
+.alert.watch    { border-left-color: #f0ad4e; }   /* orange */
+.alert.advisory { border-left-color: #f7d04a; }   /* yellow */
+.alert h4 { margin: 0; }
+
+/* Current weather card */
+.weather-card {
+  border: 1px solid #8b9bb5;
+  padding: 10px;
+  margin: 10px 0;
+  background: #1f2c47;
+}
+.weather-card__header { margin-bottom: 6px; }
+.weather-card__header h2 { display: inline; margin-right: 10px; }
+.weather-card__body img { vertical-align: middle; }
+.weather-card__temp { display: inline-block; margin: 0 16px; }
+.temp-value { font-size: 24px; font-weight: bold; }
+
+/* Forecast */
+.forecast-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.forecast-day {
+  border: 1px solid #8b9bb5;
+  padding: 6px;
+  text-align: center;
+  width: 120px;
+  background: #1f2c47;
+}
+.forecast-day .high { font-weight: bold; }
+.forecast-day .low { color: #8b9bb5; margin-left: 6px; }
+
+/* Footer */
+.footer { padding: 10px; border-top: 1px solid #8b9bb5; }

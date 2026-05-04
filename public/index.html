@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WeatherApp — CS445</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>WeatherApp</h1>
+    <div class="unit-toggle" role="group" aria-label="Temperature unit">
+      <button id="unit-c" class="unit-btn active" aria-pressed="true">&deg;C</button>
+      <button id="unit-f" class="unit-btn" aria-pressed="false">&deg;F</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <form id="search-form" class="search" novalidate>
+      <input
+        id="search-input"
+        type="text"
+        placeholder="City name or 5-digit ZIP"
+        autocomplete="off"
+        aria-label="Search city or ZIP"
+      />
+      <button type="submit" id="search-btn">Search</button>
+      <p id="search-error" class="error" hidden></p>
+    </form>
+
+    <div id="loader" class="loader" hidden>Loading weather data&hellip;</div>
+    <div id="api-error" class="error banner" hidden></div>
+
+    <!-- Alerts banner -->
+    <section id="alerts" class="alerts" hidden></section>
+
+    <!-- Current weather card -->
+    <section id="weather-card" class="weather-card" hidden>
+      <div class="weather-card__header">
+        <h2 id="wc-location"></h2>
+        <span id="wc-updated" class="muted"></span>
+      </div>
+      <div class="weather-card__body">
+        <img id="wc-icon" alt="" />
+        <div class="weather-card__temp">
+          <span id="wc-temp" class="temp-value"></span>
+          <span class="muted">Feels like <span id="wc-feels"></span></span>
+        </div>
+        <div class="weather-card__meta">
+          <p id="wc-desc"></p>
+          <p>Humidity: <span id="wc-humidity"></span>%</p>
+          <p>Wind: <span id="wc-wind"></span> m/s</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5-day forecast -->
+    <section id="forecast" class="forecast" hidden>
+      <h3>5-Day Forecast</h3>
+      <div id="forecast-grid" class="forecast-grid"></div>
+    </section>
+
+    <p id="empty-state" class="muted center">Search a city or ZIP to see the weather.</p>
+  </main>
+
+  <footer class="footer muted">
+    CS445 WeatherApp &mdash; Oscar Franklin &amp; Bennett Roberts
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>
