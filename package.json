@@ -1,0 +1,21 @@
+{
+  "name": "weatherapp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CS445 WeatherApp — Oscar Franklin & Bennett Roberts. Web-based weather application using OpenWeatherMap.",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
